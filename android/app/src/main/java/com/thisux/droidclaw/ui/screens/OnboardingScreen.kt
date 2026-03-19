@@ -116,8 +116,8 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     }
 }
 
-private const val CLOUD_SERVER_URL = "ws://192.168.0.151:8080"
-private const val CLOUD_PAIRING_BASE = "http://192.168.0.151:8080"
+private const val CLOUD_SERVER_URL = "ws://192.168.0.151"
+private const val CLOUD_PAIRING_BASE = "http://192.168.0.151"
 
 @Composable
 private fun OnboardingStepOne(onContinue: () -> Unit) {
@@ -129,6 +129,7 @@ private fun OnboardingStepOne(onContinue: () -> Unit) {
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showSelfHost by remember { mutableStateOf(false) }
+    var pairingServerUrl by remember { mutableStateOf(CLOUD_PAIRING_BASE) }
 
     // Self-host fields
     var selfHostApiKey by remember { mutableStateOf("") }
@@ -176,33 +177,31 @@ private fun OnboardingStepOne(onContinue: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = buildAnnotatedString {
-                    append("Open ")
-                    pushStringAnnotation(tag = "URL", annotation = "http://192.168.0.151:8080/dashboard/devices")
-                    withStyle(SpanStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        textDecoration = TextDecoration.Underline
-                    )) {
-                        append("droidclaw dashboard")
-                    }
-                    pop()
-                    append(", click Pair Device, and enter the 6-digit code shown here")
-                },
+                text = "Open your DroidClaw dashboard → Devices → Pair Device, then enter the 6-digit code below",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.clickable {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://192.168.0.151:8080/dashboard/devices"))
-                    context.startActivity(intent)
-                }
+                textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = pairingServerUrl,
+                onValueChange = { pairingServerUrl = it },
+                label = { Text("Server URL") },
+                placeholder = { Text("Input your server...") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = otpCode,
                 onValueChange = { if (it.length <= 6 && it.all { c -> c.isDigit() }) otpCode = it },
                 label = { Text("6-digit code") },
+                placeholder = { Text("Input your code...") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
@@ -226,7 +225,7 @@ private fun OnboardingStepOne(onContinue: () -> Unit) {
                     errorMessage = null
                     isLoading = true
                     scope.launch {
-                        val result = PairingApi.claim(CLOUD_PAIRING_BASE, otpCode)
+                        val result = PairingApi.claim(pairingServerUrl, otpCode)
                         isLoading = false
                         result.onSuccess { response ->
                             app.settingsStore.setApiKey(response.apiKey)
