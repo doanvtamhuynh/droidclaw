@@ -116,8 +116,8 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     }
 }
 
-private const val CLOUD_SERVER_URL = "wss://tunnel.droidclaw.ai"
-private const val CLOUD_PAIRING_BASE = "https://tunnel.droidclaw.ai"
+private const val CLOUD_SERVER_URL = "ws://192.168.0.151:8080"
+private const val CLOUD_PAIRING_BASE = "http://192.168.0.151:8080"
 
 @Composable
 private fun OnboardingStepOne(onContinue: () -> Unit) {
@@ -132,7 +132,7 @@ private fun OnboardingStepOne(onContinue: () -> Unit) {
 
     // Self-host fields
     var selfHostApiKey by remember { mutableStateOf("") }
-    var selfHostUrl by remember { mutableStateOf("wss://") }
+    var selfHostUrl by remember { mutableStateOf("ws://") }
 
     Column(
         modifier = Modifier
@@ -178,12 +178,12 @@ private fun OnboardingStepOne(onContinue: () -> Unit) {
             Text(
                 text = buildAnnotatedString {
                     append("Open ")
-                    pushStringAnnotation(tag = "URL", annotation = "https://app.droidclaw.ai/dashboard/devices")
+                    pushStringAnnotation(tag = "URL", annotation = "http://192.168.0.151:8080/dashboard/devices")
                     withStyle(SpanStyle(
                         color = MaterialTheme.colorScheme.primary,
                         textDecoration = TextDecoration.Underline
                     )) {
-                        append("app.droidclaw.ai")
+                        append("droidclaw dashboard")
                     }
                     pop()
                     append(", click Pair Device, and enter the 6-digit code shown here")
@@ -192,7 +192,7 @@ private fun OnboardingStepOne(onContinue: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.clickable {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://app.droidclaw.ai/dashboard/devices"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("http://192.168.0.151:8080/dashboard/devices"))
                     context.startActivity(intent)
                 }
             )
