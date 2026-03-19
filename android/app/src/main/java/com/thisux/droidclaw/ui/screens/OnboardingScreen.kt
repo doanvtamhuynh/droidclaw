@@ -116,8 +116,8 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     }
 }
 
-private const val CLOUD_SERVER_URL = "ws://192.168.0.151"
-private const val CLOUD_PAIRING_BASE = "http://192.168.0.151"
+private const val CLOUD_SERVER_URL = "ws://192.168.0.151:8080"
+private const val CLOUD_PAIRING_BASE = "http://192.168.0.151:8080"
 
 @Composable
 private fun OnboardingStepOne(onContinue: () -> Unit) {
